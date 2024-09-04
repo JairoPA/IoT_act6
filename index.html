@@ -60,7 +60,7 @@
         var particle = new Particle();
         var token;
 
-        particle.login({username: 'rjimenez@ucol.mx', password: 'K7RM839C2'}).then(
+        particle.login({username: 'jpreciado24@ucol.mx', password: 'JAIROPRE222'}).then(
             function(data) {
                 token = data.body.access_token;
             },
@@ -80,7 +80,7 @@
                 output.innerHTML = this.value;
                 var Salida = this.value;
                 particle.callFunction({
-                    deviceId: '25001d000847313037363132',
+                    deviceId: '360042001547313036303933',
                     name: 'TMS_2',
                     argument: Salida,
                     auth: token
