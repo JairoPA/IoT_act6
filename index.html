@@ -7,32 +7,72 @@
     
     <!-- CSS -->
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
         #Ktms {
             -webkit-appearance: none;
-            height: 2px;
-            font-family: 'museo700';
-            margin-bottom: 0px;
-            position: absolute;
-            padding: .1em;
-            background: black;
-            color: yellow;
-            top: 110px;
-            left: 245px;
-            width: 140px;
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #Ktms::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #Ktms::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
         }
 
         #Kvaluetms {
-            color: red;
-            top: 105px;
-            left: 400px;
-            position: absolute;
+            display: block;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
         }
 
         #TM {
-            color: red;
-            top: 90px;
-            left: 200px;
-            position: absolute;
+            font-size: 24px;
+            color: #007bff;
         }
     </style>
 
@@ -51,43 +91,55 @@
 <body>
 
     <!-- HTML Content -->
-    <input type="range" min="5" max="20" step="1" value="5" class="slider" id="Ktms" oninput="outputUpdate(this.value)">
-    <output for="Ktms" id="Kvaluetms"></output>
-    <span id="TM">\[{TMS}\]</span>
+    <div class="container">
+        <h1>Particle Control</h1>
+        <input type="range" min="5" max="20" step="1" value="5" id="Ktms">
+        <output for="Ktms" id="Kvaluetms">5</output>
+        <span id="TM">\[{TMS}\]</span>
+    </div>
 
     <!-- JavaScript -->
     <script>
+        // Configura Particle API
         var particle = new Particle();
         var token;
 
+        // Autenticación con la API de Particle
         particle.login({username: 'jpreciado24@ucol.mx', password: 'JAIROPRE22'}).then(
             function(data) {
                 token = data.body.access_token;
+                console.log('Login successful, token:', token);
             },
             function(err) {
                 console.log('Could not log in.', err);
             }
         );
 
-        function outputUpdate(val) {
+        // Actualiza el valor del slider y llama a la función de Particle
+        document.getElementById('Ktms').addEventListener('input', function() {
             var output = document.getElementById('Kvaluetms');
-            output.innerHTML = val;
-        }
+            output.innerHTML = this.value;
+            var Salida = this.value;
 
-        setInterval(function() {
-            document.getElementById('Ktms').oninput = function() {
-                var output = document.getElementById('Kvaluetms');
-                output.innerHTML = this.value;
-                var Salida = this.value;
+            // Llama a la función en el dispositivo Particle
+            if (token) {
                 particle.callFunction({
-                    deviceId: '360042001547313036303933',
+                    deviceId: '360042001547313036303933', // Reemplaza con tu deviceId
                     name: 'TMS_2',
                     argument: Salida,
                     auth: token
-                });
+                }).then(
+                    function(data) {
+                        console.log('Function call successful:', data);
+                    },
+                    function(err) {
+                        console.log('Function call failed:', err);
+                    }
+                );
+            } else {
+                console.log('No token available. Function call not made.');
             }
-            document.getElementById('Ktms').oninput();
-        }, 1000);
+        });
     </script>
 </body>
 </html>
