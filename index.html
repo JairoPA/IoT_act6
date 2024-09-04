@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Particle Control</title>
+    
+    <!-- CSS -->
+    <style>
+        #Ktms {
+            -webkit-appearance: none;
+            height: 2px;
+            font-family: 'museo700';
+            margin-bottom: 0px;
+            position: absolute;
+            padding: .1em;
+            background: black;
+            color: yellow;
+            top: 110px;
+            left: 245px;
+            width: 140px;
+        }
+
+        #Kvaluetms {
+            color: red;
+            top: 105px;
+            left: 400px;
+            position: absolute;
+        }
+
+        #TM {
+            color: red;
+            top: 90px;
+            left: 200px;
+            position: absolute;
+        }
+    </style>
+
+    <!-- External Scripts and Stylesheets -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/particle-api-js@8/dist/particle.min.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.15.2/js/all.js" data-auto-a11y="true"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.0/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <!-- HTML Content -->
+    <input type="range" min="5" max="20" step="1" value="5" class="slider" id="Ktms" oninput="outputUpdate(this.value)">
+    <output for="Ktms" id="Kvaluetms"></output>
+    <span id="TM">\[{TMS}\]</span>
+
+    <!-- JavaScript -->
+    <script>
+        var particle = new Particle();
+        var token;
+
+        particle.login({username: 'rjimenez@ucol.mx', password: 'K7RM839C2'}).then(
+            function(data) {
+                token = data.body.access_token;
+            },
+            function(err) {
+                console.log('Could not log in.', err);
+            }
+        );
+
+        function outputUpdate(val) {
+            var output = document.getElementById('Kvaluetms');
+            output.innerHTML = val;
+        }
+
+        setInterval(function() {
+            document.getElementById('Ktms').oninput = function() {
+                var output = document.getElementById('Kvaluetms');
+                output.innerHTML = this.value;
+                var Salida = this.value;
+                particle.callFunction({
+                    deviceId: '25001d000847313037363132',
+                    name: 'TMS_2',
+                    argument: Salida,
+                    auth: token
+                });
+            }
+            document.getElementById('Ktms').oninput();
+        }, 1000);
+    </script>
+</body>
+</html>
